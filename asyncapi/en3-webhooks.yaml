@@ -1,0 +1,145 @@
+asyncapi: 2.6.0
+info:
+  title: En3 Sandbox Webhooks
+  version: 0.1.0
+  description: Public webhook contract for En3 sandbox events. Payloads are mock/reference artifacts only.
+defaultContentType: application/json
+channels:
+  wallet.created:
+    subscribe:
+      message:
+        $ref: '#/components/messages/WalletCreated'
+  address.created:
+    subscribe:
+      message:
+        $ref: '#/components/messages/AddressCreated'
+  transaction.submitted:
+    subscribe:
+      message:
+        $ref: '#/components/messages/TransactionSubmitted'
+  transaction.requires_approval:
+    subscribe:
+      message:
+        $ref: '#/components/messages/TransactionRequiresApproval'
+  transaction.approved:
+    subscribe:
+      message:
+        $ref: '#/components/messages/TransactionApproved'
+  transaction.broadcast:
+    subscribe:
+      message:
+        $ref: '#/components/messages/TransactionBroadcast'
+  transaction.settled:
+    subscribe:
+      message:
+        $ref: '#/components/messages/TransactionSettled'
+  transaction.failed:
+    subscribe:
+      message:
+        $ref: '#/components/messages/TransactionFailed'
+  risk.review_required:
+    subscribe:
+      message:
+        $ref: '#/components/messages/RiskReviewRequired'
+components:
+  messages:
+    WalletCreated:
+      name: wallet.created
+      payload:
+        $ref: '#/components/schemas/WalletEvent'
+    AddressCreated:
+      name: address.created
+      payload:
+        $ref: '#/components/schemas/AddressEvent'
+    TransactionSubmitted:
+      name: transaction.submitted
+      payload:
+        $ref: '#/components/schemas/TransactionEvent'
+    TransactionRequiresApproval:
+      name: transaction.requires_approval
+      payload:
+        $ref: '#/components/schemas/TransactionEvent'
+    TransactionApproved:
+      name: transaction.approved
+      payload:
+        $ref: '#/components/schemas/TransactionEvent'
+    TransactionBroadcast:
+      name: transaction.broadcast
+      payload:
+        $ref: '#/components/schemas/TransactionEvent'
+    TransactionSettled:
+      name: transaction.settled
+      payload:
+        $ref: '#/components/schemas/TransactionEvent'
+    TransactionFailed:
+      name: transaction.failed
+      payload:
+        $ref: '#/components/schemas/TransactionEvent'
+    RiskReviewRequired:
+      name: risk.review_required
+      payload:
+        $ref: '#/components/schemas/RiskReviewEvent'
+  schemas:
+    BaseEvent:
+      type: object
+      required: [id, type, createdAt, organizationId]
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        organizationId:
+          type: string
+    WalletEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          properties:
+            walletId:
+              type: string
+            ownerId:
+              type: string
+    AddressEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          properties:
+            walletId:
+              type: string
+            address:
+              type: string
+            network:
+              type: string
+            asset:
+              type: string
+    TransactionEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          properties:
+            transactionId:
+              type: string
+            walletId:
+              type: string
+            status:
+              type: string
+            asset:
+              type: string
+            amount:
+              type: string
+            network:
+              type: string
+    RiskReviewEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          properties:
+            transactionId:
+              type: string
+            reviewId:
+              type: string
+            reason:
+              type: string

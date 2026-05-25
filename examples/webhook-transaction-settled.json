@@ -1,0 +1,12 @@
+{
+  "id": "evt_001",
+  "type": "transaction.settled",
+  "createdAt": "2026-05-25T12:00:00Z",
+  "organizationId": "org_sandbox_001",
+  "transactionId": "txn_001",
+  "walletId": "wallet_001",
+  "status": "settled",
+  "asset": "USDC",
+  "amount": "12500.00",
+  "network": "base-sepolia"
+}

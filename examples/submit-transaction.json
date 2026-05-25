@@ -1,0 +1,9 @@
+{
+  "organizationId": "org_sandbox_001",
+  "walletId": "wallet_001",
+  "asset": "USDC",
+  "amount": "12500.00",
+  "network": "base-sepolia",
+  "destinationAddress": "0x1111111111111111111111111111111111111111",
+  "idempotencyKey": "partner-txn-0001"
+}

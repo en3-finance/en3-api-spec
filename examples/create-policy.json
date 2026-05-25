@@ -1,0 +1,16 @@
+{
+  "organizationId": "org_sandbox_001",
+  "name": "High value stablecoin transfer approval",
+  "rules": [
+    {
+      "type": "transaction_amount",
+      "asset": "USDC",
+      "threshold": "10000.00",
+      "action": "require_approval"
+    },
+    {
+      "type": "address_risk_signal",
+      "action": "require_review"
+    }
+  ]
+}

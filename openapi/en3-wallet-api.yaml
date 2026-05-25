@@ -1,0 +1,512 @@
+openapi: 3.1.0
+info:
+  title: En3 Wallet-as-a-Service Sandbox API
+  version: 0.1.0
+  description: Public sandbox contract for En3 Wallet-as-a-Service integration. This contract is not a production custody, signing, policy, ledger, risk, or treasury system.
+servers:
+  - url: https://sandbox.api.en3.example
+    description: Placeholder sandbox URL for documentation only.
+security:
+  - bearerAuth: []
+paths:
+  /organizations:
+    post:
+      summary: Create an organization in the sandbox
+      operationId: createOrganization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrganizationRequest'
+      responses:
+        '201':
+          description: Organization created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+  /users:
+    post:
+      summary: Create a sandbox user
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /wallets:
+    post:
+      summary: Create a wallet
+      operationId: createWallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWalletRequest'
+      responses:
+        '201':
+          description: Wallet created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+  /wallets/{walletId}:
+    get:
+      summary: Get wallet details
+      operationId: getWallet
+      parameters:
+        - $ref: '#/components/parameters/WalletId'
+      responses:
+        '200':
+          description: Wallet details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+  /wallets/{walletId}/addresses:
+    post:
+      summary: Create a deposit address
+      operationId: createWalletAddress
+      parameters:
+        - $ref: '#/components/parameters/WalletId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAddressRequest'
+      responses:
+        '201':
+          description: Address created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+  /transactions:
+    post:
+      summary: Submit a sandbox transaction
+      operationId: submitTransaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransactionRequest'
+      responses:
+        '202':
+          description: Transaction accepted for simulation or approval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+  /transactions/{transactionId}/simulate:
+    post:
+      summary: Simulate a transaction before execution
+      operationId: simulateTransaction
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+      responses:
+        '200':
+          description: Simulation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionSimulation'
+  /transactions/{transactionId}/approve:
+    post:
+      summary: Approve a transaction in the sandbox approval workflow
+      operationId: approveTransaction
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveTransactionRequest'
+      responses:
+        '200':
+          description: Approval recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Approval'
+  /audit-events:
+    get:
+      summary: List audit events
+      operationId: listAuditEvents
+      parameters:
+        - name: organizationId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Audit events
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditEvent'
+  /policies:
+    post:
+      summary: Create a sandbox policy
+      operationId: createPolicy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePolicyRequest'
+      responses:
+        '201':
+          description: Policy created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Policy'
+  /webhook-endpoints:
+    post:
+      summary: Register a webhook endpoint
+      operationId: createWebhookEndpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWebhookEndpointRequest'
+      responses:
+        '201':
+          description: Webhook endpoint registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookEndpoint'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: sandbox-token
+  parameters:
+    WalletId:
+      name: walletId
+      in: path
+      required: true
+      schema:
+        type: string
+    TransactionId:
+      name: transactionId
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    Organization:
+      type: object
+      required: [id, name, status, createdAt]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum: [sandbox_active, suspended]
+        createdAt:
+          type: string
+          format: date-time
+    User:
+      type: object
+      required: [id, organizationId, externalUserId, status, createdAt]
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        externalUserId:
+          type: string
+        status:
+          type: string
+          enum: [active, restricted, closed]
+        createdAt:
+          type: string
+          format: date-time
+    Wallet:
+      type: object
+      required: [id, organizationId, ownerType, ownerId, status, balances]
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        ownerType:
+          type: string
+          enum: [user, treasury, system]
+        ownerId:
+          type: string
+        status:
+          type: string
+          enum: [active, frozen, closed]
+        balances:
+          type: array
+          items:
+            type: object
+            required: [asset, network, available, pending]
+            properties:
+              asset:
+                type: string
+              network:
+                type: string
+              available:
+                type: string
+              pending:
+                type: string
+    Address:
+      type: object
+      required: [id, walletId, network, address, status]
+      properties:
+        id:
+          type: string
+        walletId:
+          type: string
+        network:
+          type: string
+        address:
+          type: string
+        status:
+          type: string
+          enum: [active, archived]
+    Transaction:
+      type: object
+      required: [id, organizationId, walletId, type, asset, amount, network, status, createdAt]
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        walletId:
+          type: string
+        type:
+          type: string
+          enum: [deposit, withdrawal, transfer]
+        asset:
+          type: string
+        amount:
+          type: string
+        network:
+          type: string
+        destinationAddress:
+          type: string
+        status:
+          type: string
+          enum: [submitted, requires_approval, approved, broadcast, settled, failed]
+        policyResult:
+          type: string
+          enum: [pass, approval_required, review_required]
+        createdAt:
+          type: string
+          format: date-time
+    TransactionSimulation:
+      type: object
+      required: [transactionId, result, estimatedFee, policyResult]
+      properties:
+        transactionId:
+          type: string
+        result:
+          type: string
+          enum: [allowed, approval_required, blocked]
+        estimatedFee:
+          type: string
+        policyResult:
+          type: string
+        riskSignals:
+          type: array
+          items:
+            type: string
+    Policy:
+      type: object
+      required: [id, organizationId, name, status, rules]
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        name:
+          type: string
+        status:
+          type: string
+          enum: [draft, active, disabled]
+        rules:
+          type: array
+          items:
+            type: object
+            required: [type, action]
+            properties:
+              type:
+                type: string
+              threshold:
+                type: string
+              action:
+                type: string
+                enum: [allow, require_approval, require_review, block]
+    Approval:
+      type: object
+      required: [id, transactionId, status, decidedBy, decidedAt]
+      properties:
+        id:
+          type: string
+        transactionId:
+          type: string
+        status:
+          type: string
+          enum: [approved, rejected]
+        decidedBy:
+          type: string
+        note:
+          type: string
+        decidedAt:
+          type: string
+          format: date-time
+    AuditEvent:
+      type: object
+      required: [id, organizationId, actorType, action, resourceType, resourceId, createdAt]
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        actorType:
+          type: string
+          enum: [user, admin, system]
+        actorId:
+          type: string
+        action:
+          type: string
+        resourceType:
+          type: string
+        resourceId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    WebhookEndpoint:
+      type: object
+      required: [id, organizationId, url, events, status]
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [active, disabled]
+    CreateOrganizationRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+    CreateUserRequest:
+      type: object
+      required: [organizationId, externalUserId]
+      properties:
+        organizationId:
+          type: string
+        externalUserId:
+          type: string
+    CreateWalletRequest:
+      type: object
+      required: [organizationId, ownerType, ownerId]
+      properties:
+        organizationId:
+          type: string
+        ownerType:
+          type: string
+          enum: [user, treasury, system]
+        ownerId:
+          type: string
+    CreateAddressRequest:
+      type: object
+      required: [network, asset]
+      properties:
+        network:
+          type: string
+        asset:
+          type: string
+    CreateTransactionRequest:
+      type: object
+      required: [organizationId, walletId, asset, amount, network, destinationAddress]
+      properties:
+        organizationId:
+          type: string
+        walletId:
+          type: string
+        asset:
+          type: string
+        amount:
+          type: string
+        network:
+          type: string
+        destinationAddress:
+          type: string
+        idempotencyKey:
+          type: string
+    ApproveTransactionRequest:
+      type: object
+      required: [decidedBy, decision]
+      properties:
+        decidedBy:
+          type: string
+        decision:
+          type: string
+          enum: [approve, reject]
+        note:
+          type: string
+    CreatePolicyRequest:
+      type: object
+      required: [organizationId, name, rules]
+      properties:
+        organizationId:
+          type: string
+        name:
+          type: string
+        rules:
+          type: array
+          items:
+            type: object
+    CreateWebhookEndpointRequest:
+      type: object
+      required: [organizationId, url, events]
+      properties:
+        organizationId:
+          type: string
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
