@@ -17,6 +17,10 @@ channels:
     subscribe:
       message:
         $ref: '#/components/messages/TransactionSubmitted'
+  transaction.simulated:
+    subscribe:
+      message:
+        $ref: '#/components/messages/TransactionSimulated'
   transaction.requires_approval:
     subscribe:
       message:
@@ -41,6 +45,14 @@ channels:
     subscribe:
       message:
         $ref: '#/components/messages/RiskReviewRequired'
+  reconciliation.report_updated:
+    subscribe:
+      message:
+        $ref: '#/components/messages/ReconciliationReportUpdated'
+  audit.event_recorded:
+    subscribe:
+      message:
+        $ref: '#/components/messages/AuditEventRecorded'
 components:
   messages:
     WalletCreated:
@@ -53,6 +65,10 @@ components:
         $ref: '#/components/schemas/AddressEvent'
     TransactionSubmitted:
       name: transaction.submitted
+      payload:
+        $ref: '#/components/schemas/TransactionEvent'
+    TransactionSimulated:
+      name: transaction.simulated
       payload:
         $ref: '#/components/schemas/TransactionEvent'
     TransactionRequiresApproval:
@@ -79,6 +95,14 @@ components:
       name: risk.review_required
       payload:
         $ref: '#/components/schemas/RiskReviewEvent'
+    ReconciliationReportUpdated:
+      name: reconciliation.report_updated
+      payload:
+        $ref: '#/components/schemas/ReconciliationEvent'
+    AuditEventRecorded:
+      name: audit.event_recorded
+      payload:
+        $ref: '#/components/schemas/AuditEvent'
   schemas:
     BaseEvent:
       type: object
@@ -142,4 +166,28 @@ components:
             reviewId:
               type: string
             reason:
+              type: string
+    ReconciliationEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          properties:
+            reportId:
+              type: string
+            status:
+              type: string
+            itemCount:
+              type: integer
+    AuditEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          properties:
+            auditEventId:
+              type: string
+            action:
+              type: string
+            resourceType:
+              type: string
+            resourceId:
               type: string

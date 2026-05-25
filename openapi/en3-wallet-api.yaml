@@ -197,6 +197,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WebhookEndpoint'
+  /reconciliation-reports/{reportId}:
+    get:
+      summary: Get a sandbox reconciliation report
+      operationId: getReconciliationReport
+      parameters:
+        - $ref: '#/components/parameters/ReportId'
+      responses:
+        '200':
+          description: Reconciliation report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconciliationReport'
 components:
   securitySchemes:
     bearerAuth:
@@ -212,6 +225,12 @@ components:
         type: string
     TransactionId:
       name: transactionId
+      in: path
+      required: true
+      schema:
+        type: string
+    ReportId:
+      name: reportId
       in: path
       required: true
       schema:
@@ -315,10 +334,10 @@ components:
           type: string
         status:
           type: string
-          enum: [submitted, requires_approval, approved, broadcast, settled, failed]
+          enum: [submitted, simulated, requires_approval, approved, broadcast, settled, failed]
         policyResult:
           type: string
-          enum: [pass, approval_required, review_required]
+          enum: [pass, approval_required, review_required, blocked]
         createdAt:
           type: string
           format: date-time
@@ -330,7 +349,7 @@ components:
           type: string
         result:
           type: string
-          enum: [allowed, approval_required, blocked]
+          enum: [allowed, approval_required, review_required, blocked]
         estimatedFee:
           type: string
         policyResult:
@@ -423,6 +442,39 @@ components:
         status:
           type: string
           enum: [active, disabled]
+    ReconciliationReport:
+      type: object
+      required: [id, organizationId, status, itemCount, items, updatedAt]
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        status:
+          type: string
+          enum: [matched, exception]
+        itemCount:
+          type: integer
+        items:
+          type: array
+          items:
+            type: object
+            required: [transactionId, walletId, asset, amount, status]
+            properties:
+              transactionId:
+                type: string
+              walletId:
+                type: string
+              asset:
+                type: string
+              amount:
+                type: string
+              status:
+                type: string
+                enum: [matched, exception]
+        updatedAt:
+          type: string
+          format: date-time
     CreateOrganizationRequest:
       type: object
       required: [name]

@@ -16,6 +16,7 @@ This repo is for partner engineers, banks, fintechs, payment providers, referenc
 - Wallet, address, transaction, simulation, approval, policy, audit, and webhook resources.
 - Webhook event names and payload conventions.
 - Mock stablecoin payment and control-plane lifecycle.
+- One canonical end-to-end scenario: bank customer wallet -> deposit address -> outgoing payment -> policy/risk check -> approval -> settlement -> reconciliation -> audit trail.
 
 ## Intentionally Out Of Scope
 
@@ -27,6 +28,8 @@ This repo does not contain production cryptography, signing orchestration, polic
 - `asyncapi/en3-webhooks.yaml` - webhook event contract.
 - `examples/` - mock request and event payloads.
 - `docs/api-design-principles.md` - public API design notes.
+- `docs/end-to-end-bank-wallet-scenario.md` - canonical public scenario.
+- `docs/webhook-signatures.md` - sandbox webhook signature boundary.
 
 ## Related En3 Repositories
 
