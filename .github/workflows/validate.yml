@@ -16,20 +16,5 @@ jobs:
           python-version: '3.x'
       - name: Install YAML parser
         run: python -m pip install pyyaml
-      - name: Parse YAML and JSON
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          import yaml
-
-          for path in [Path('openapi/en3-wallet-api.yaml'), Path('asyncapi/en3-webhooks.yaml')]:
-              with path.open('r', encoding='utf-8') as handle:
-                  yaml.safe_load(handle)
-
-          for path in Path('examples').glob('*.json'):
-              with path.open('r', encoding='utf-8') as handle:
-                  json.load(handle)
-
-          print('contracts parsed')
-          PY
+      - name: Validate public contracts
+        run: python3 scripts/validate_public_contracts.py

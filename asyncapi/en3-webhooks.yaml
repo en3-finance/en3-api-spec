@@ -2,9 +2,22 @@ asyncapi: 2.6.0
 info:
   title: En3 Sandbox Webhooks
   version: 0.1.0
-  description: Public webhook contract for En3 sandbox events. Payloads are mock/reference artifacts only.
+  description: >-
+    Status: public reference / sandbox artifact. This repository is intended to
+    document and demonstrate the En3 integration surface. Production
+    cryptography, signing orchestration, policy enforcement, risk logic, ledger
+    infrastructure, treasury execution, and customer deployments are private by
+    design.
 defaultContentType: application/json
 channels:
+  organization.created:
+    subscribe:
+      message:
+        $ref: '#/components/messages/OrganizationCreated'
+  user.created:
+    subscribe:
+      message:
+        $ref: '#/components/messages/UserCreated'
   wallet.created:
     subscribe:
       message:
@@ -13,6 +26,10 @@ channels:
     subscribe:
       message:
         $ref: '#/components/messages/AddressCreated'
+  policy.created:
+    subscribe:
+      message:
+        $ref: '#/components/messages/PolicyCreated'
   transaction.submitted:
     subscribe:
       message:
@@ -29,6 +46,14 @@ channels:
     subscribe:
       message:
         $ref: '#/components/messages/TransactionApproved'
+  transaction.signing:
+    subscribe:
+      message:
+        $ref: '#/components/messages/TransactionSigning'
+  transaction.signed:
+    subscribe:
+      message:
+        $ref: '#/components/messages/TransactionSigned'
   transaction.broadcast:
     subscribe:
       message:
@@ -41,20 +66,24 @@ channels:
     subscribe:
       message:
         $ref: '#/components/messages/TransactionFailed'
-  risk.review_required:
+  audit.event_created:
     subscribe:
       message:
-        $ref: '#/components/messages/RiskReviewRequired'
-  reconciliation.report_updated:
+        $ref: '#/components/messages/AuditEventCreated'
+  reconciliation.updated:
     subscribe:
       message:
-        $ref: '#/components/messages/ReconciliationReportUpdated'
-  audit.event_recorded:
-    subscribe:
-      message:
-        $ref: '#/components/messages/AuditEventRecorded'
+        $ref: '#/components/messages/ReconciliationUpdated'
 components:
   messages:
+    OrganizationCreated:
+      name: organization.created
+      payload:
+        $ref: '#/components/schemas/OrganizationEvent'
+    UserCreated:
+      name: user.created
+      payload:
+        $ref: '#/components/schemas/UserEvent'
     WalletCreated:
       name: wallet.created
       payload:
@@ -63,6 +92,10 @@ components:
       name: address.created
       payload:
         $ref: '#/components/schemas/AddressEvent'
+    PolicyCreated:
+      name: policy.created
+      payload:
+        $ref: '#/components/schemas/PolicyEvent'
     TransactionSubmitted:
       name: transaction.submitted
       payload:
@@ -79,6 +112,14 @@ components:
       name: transaction.approved
       payload:
         $ref: '#/components/schemas/TransactionEvent'
+    TransactionSigning:
+      name: transaction.signing
+      payload:
+        $ref: '#/components/schemas/TransactionEvent'
+    TransactionSigned:
+      name: transaction.signed
+      payload:
+        $ref: '#/components/schemas/TransactionEvent'
     TransactionBroadcast:
       name: transaction.broadcast
       payload:
@@ -91,103 +132,206 @@ components:
       name: transaction.failed
       payload:
         $ref: '#/components/schemas/TransactionEvent'
-    RiskReviewRequired:
-      name: risk.review_required
+    AuditEventCreated:
+      name: audit.event_created
       payload:
-        $ref: '#/components/schemas/RiskReviewEvent'
-    ReconciliationReportUpdated:
-      name: reconciliation.report_updated
+        $ref: '#/components/schemas/AuditEventCreated'
+    ReconciliationUpdated:
+      name: reconciliation.updated
       payload:
         $ref: '#/components/schemas/ReconciliationEvent'
-    AuditEventRecorded:
-      name: audit.event_recorded
-      payload:
-        $ref: '#/components/schemas/AuditEvent'
   schemas:
+    PublicEventType:
+      type: string
+      enum:
+        - organization.created
+        - user.created
+        - wallet.created
+        - address.created
+        - policy.created
+        - transaction.submitted
+        - transaction.simulated
+        - transaction.requires_approval
+        - transaction.approved
+        - transaction.signing
+        - transaction.signed
+        - transaction.broadcast
+        - transaction.settled
+        - transaction.failed
+        - audit.event_created
+        - reconciliation.updated
     BaseEvent:
       type: object
-      required: [id, type, createdAt, organizationId]
+      required: [id, type, createdAt, organizationId, deliveryStatus]
       properties:
         id:
           type: string
+          example: evt_sandbox_000001
         type:
-          type: string
+          $ref: '#/components/schemas/PublicEventType'
         createdAt:
           type: string
           format: date-time
         organizationId:
           type: string
+          example: org_sandbox_000001
+        deliveryStatus:
+          type: string
+          enum: [pending, delivered, failed, retrying]
+    OrganizationEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required: [resourceType, resourceId]
+          properties:
+            resourceType:
+              type: string
+              const: Organization
+            resourceId:
+              type: string
+              example: org_sandbox_000001
+    UserEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required: [resourceType, resourceId, userId]
+          properties:
+            resourceType:
+              type: string
+              const: User
+            resourceId:
+              type: string
+              example: usr_sandbox_000001
+            userId:
+              type: string
+              example: usr_sandbox_000001
     WalletEvent:
       allOf:
         - $ref: '#/components/schemas/BaseEvent'
         - type: object
+          required: [resourceType, resourceId, walletId, status]
           properties:
+            resourceType:
+              type: string
+              const: Wallet
+            resourceId:
+              type: string
+              example: wal_sandbox_000001
             walletId:
               type: string
-            ownerId:
+              example: wal_sandbox_000001
+            status:
               type: string
+              enum: [created, address_issued, active, suspended, closed]
     AddressEvent:
       allOf:
         - $ref: '#/components/schemas/BaseEvent'
         - type: object
+          required: [resourceType, resourceId, walletId, assetCode, networkCode]
           properties:
+            resourceType:
+              type: string
+              const: Address
+            resourceId:
+              type: string
+              example: adr_sandbox_000001
             walletId:
               type: string
-            address:
+              example: wal_sandbox_000001
+            assetCode:
               type: string
-            network:
+              example: USDC
+            networkCode:
               type: string
-            asset:
+              example: sandbox-base-sepolia
+    PolicyEvent:
+      allOf:
+        - $ref: '#/components/schemas/BaseEvent'
+        - type: object
+          required: [resourceType, resourceId, policyId]
+          properties:
+            resourceType:
               type: string
+              const: Policy
+            resourceId:
+              type: string
+              example: pol_sandbox_000001
+            policyId:
+              type: string
+              example: pol_sandbox_000001
     TransactionEvent:
       allOf:
         - $ref: '#/components/schemas/BaseEvent'
         - type: object
+          required: [resourceType, resourceId, transactionId, walletId, status, assetCode, networkCode, amount]
           properties:
+            resourceType:
+              type: string
+              const: TransactionIntent
+            resourceId:
+              type: string
+              example: txn_sandbox_000001
             transactionId:
               type: string
+              example: txn_sandbox_000001
             walletId:
               type: string
+              example: wal_sandbox_000001
             status:
               type: string
-            asset:
+              enum:
+                - submitted
+                - simulated
+                - requires_approval
+                - approved
+                - signing
+                - signed
+                - broadcast
+                - settled
+                - failed
+                - cancelled
+            assetCode:
               type: string
+              example: USDC
+            networkCode:
+              type: string
+              example: sandbox-base-sepolia
             amount:
               type: string
-            network:
-              type: string
-    RiskReviewEvent:
+              example: '12500.00'
+    AuditEventCreated:
       allOf:
         - $ref: '#/components/schemas/BaseEvent'
         - type: object
+          required: [resourceType, resourceId, action]
           properties:
-            transactionId:
+            resourceType:
               type: string
-            reviewId:
+              const: AuditEvent
+            resourceId:
               type: string
-            reason:
+              example: aud_sandbox_000001
+            action:
               type: string
+              example: transaction.approved
     ReconciliationEvent:
       allOf:
         - $ref: '#/components/schemas/BaseEvent'
         - type: object
+          required: [resourceType, resourceId, transactionId, status, mockReferenceOnly]
           properties:
-            reportId:
-              type: string
-            status:
-              type: string
-            itemCount:
-              type: integer
-    AuditEvent:
-      allOf:
-        - $ref: '#/components/schemas/BaseEvent'
-        - type: object
-          properties:
-            auditEventId:
-              type: string
-            action:
-              type: string
             resourceType:
               type: string
+              const: ReconciliationEntry
             resourceId:
               type: string
+              example: rec_sandbox_000001
+            transactionId:
+              type: string
+              example: txn_sandbox_000001
+            status:
+              type: string
+              enum: [pending, matched, exception, resolved]
+            mockReferenceOnly:
+              type: boolean
+              const: true

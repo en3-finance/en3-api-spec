@@ -3,8 +3,8 @@
   "walletId": "wal_sandbox_000001",
   "type": "withdrawal",
   "assetCode": "USDC",
-  "amount": "12500.00",
   "networkCode": "sandbox-base-sepolia",
+  "amount": "12500.00",
   "destinationAddress": "sandbox_destination_sandbank_000001",
   "idempotencyKey": "sandbank-txn-000001"
 }

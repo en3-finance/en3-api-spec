@@ -1,0 +1,74 @@
+{
+  "scenario": "sandbank-demo",
+  "organization": {
+    "id": "org_sandbox_000001",
+    "name": "SandBank",
+    "mode": "sandbox",
+    "status": "sandbox_active"
+  },
+  "user": {
+    "id": "usr_sandbox_000001",
+    "organizationId": "org_sandbox_000001",
+    "externalUserId": "sandbank-user-000001",
+    "status": "active"
+  },
+  "wallet": {
+    "id": "wal_sandbox_000001",
+    "organizationId": "org_sandbox_000001",
+    "ownerType": "user",
+    "ownerId": "usr_sandbox_000001",
+    "status": "address_issued"
+  },
+  "address": {
+    "id": "adr_sandbox_000001",
+    "walletId": "wal_sandbox_000001",
+    "organizationId": "org_sandbox_000001",
+    "assetCode": "USDC",
+    "networkCode": "sandbox-base-sepolia",
+    "address": "sandbox_addr_sandbank_000001",
+    "status": "active"
+  },
+  "policy": {
+    "id": "pol_sandbox_000001",
+    "organizationId": "org_sandbox_000001",
+    "name": "SandBank approval threshold",
+    "status": "active",
+    "approvalThreshold": "10000.00",
+    "blockThreshold": "50000.00"
+  },
+  "transaction": {
+    "id": "txn_sandbox_000001",
+    "organizationId": "org_sandbox_000001",
+    "walletId": "wal_sandbox_000001",
+    "type": "withdrawal",
+    "assetCode": "USDC",
+    "networkCode": "sandbox-base-sepolia",
+    "amount": "12500.00",
+    "destinationAddress": "sandbox_destination_sandbank_000001",
+    "status": "settled"
+  },
+  "events": [
+    "organization.created",
+    "user.created",
+    "wallet.created",
+    "address.created",
+    "policy.created",
+    "transaction.submitted",
+    "transaction.simulated",
+    "transaction.requires_approval",
+    "transaction.approved",
+    "transaction.signing",
+    "transaction.signed",
+    "transaction.broadcast",
+    "reconciliation.updated",
+    "transaction.settled",
+    "audit.event_created"
+  ],
+  "reconciliation": {
+    "id": "rec_sandbox_000001",
+    "organizationId": "org_sandbox_000001",
+    "transactionId": "txn_sandbox_000001",
+    "status": "matched",
+    "mockReferenceOnly": true
+  }
+}

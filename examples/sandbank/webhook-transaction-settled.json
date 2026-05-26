@@ -10,6 +10,6 @@
   "walletId": "wal_sandbox_000001",
   "status": "settled",
   "assetCode": "USDC",
-  "amount": "12500.00",
-  "networkCode": "sandbox-base-sepolia"
+  "networkCode": "sandbox-base-sepolia",
+  "amount": "12500.00"
 }

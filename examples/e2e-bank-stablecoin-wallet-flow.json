@@ -1,59 +1,26 @@
 {
-  "scenario": "bank-stablecoin-wallet",
+  "scenario": "sandbank-demo",
   "organization": {
-    "id": "org_sandbox_001",
-    "name": "Reference Bank",
+    "id": "org_sandbox_000001",
+    "name": "SandBank",
+    "mode": "sandbox",
     "status": "sandbox_active"
   },
-  "user": {
-    "id": "user_001",
-    "organizationId": "org_sandbox_001",
-    "externalUserId": "core-user-001",
-    "status": "active"
-  },
-  "wallet": {
-    "id": "wallet_001",
-    "organizationId": "org_sandbox_001",
-    "ownerType": "user",
-    "ownerId": "user_001",
-    "status": "active"
-  },
-  "depositAddress": {
-    "id": "addr_001",
-    "walletId": "wallet_001",
-    "network": "base-sepolia",
-    "asset": "USDC",
-    "address": "0x2222222222222222222222222222222222222222",
-    "status": "active"
-  },
-  "outgoingPayment": {
-    "id": "txn_001",
-    "organizationId": "org_sandbox_001",
-    "walletId": "wallet_001",
-    "type": "withdrawal",
-    "asset": "USDC",
-    "amount": "12500.00",
-    "network": "base-sepolia",
-    "destinationAddress": "0x1111111111111111111111111111111111111111",
-    "status": "requires_approval",
-    "policyResult": "approval_required"
-  },
   "events": [
+    "organization.created",
+    "user.created",
     "wallet.created",
     "address.created",
+    "policy.created",
     "transaction.submitted",
     "transaction.simulated",
     "transaction.requires_approval",
     "transaction.approved",
+    "transaction.signing",
+    "transaction.signed",
     "transaction.broadcast",
+    "reconciliation.updated",
     "transaction.settled",
-    "reconciliation.report_updated",
-    "audit.event_recorded"
-  ],
-  "reconciliationReport": {
-    "id": "recon_001",
-    "organizationId": "org_sandbox_001",
-    "status": "matched",
-    "itemCount": 1
-  }
+    "audit.event_created"
+  ]
 }

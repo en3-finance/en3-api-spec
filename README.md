@@ -4,11 +4,11 @@ Status: public reference / sandbox artifact. This repository is intended to docu
 
 ## What This Repo Is
 
-`en3-api-spec` contains OpenAPI, AsyncAPI, webhook schemas, mock examples, and sandbox contracts for the public En3 Wallet-as-a-Service integration surface.
+`en3-api-spec` contains OpenAPI, AsyncAPI, webhook schemas, mock examples, and sandbox contracts for the public En3 Wallet-as-a-Service integration surface. Contracts are synchronized strictly from the sanitized public export pack at `../en3-platform/contracts/public`.
 
 ## Who It Is For
 
-This repo is for partner engineers, banks, fintechs, payment providers, reference-app builders, and diligence teams that need to understand how En3 APIs could be integrated.
+This repo is for partner engineers, fintechs, payment providers, reference-app builders, and diligence teams that need to understand how En3 APIs could be integrated.
 
 ## What It Demonstrates
 
@@ -16,7 +16,7 @@ This repo is for partner engineers, banks, fintechs, payment providers, referenc
 - Wallet, address, transaction, simulation, approval, policy, audit, and webhook resources.
 - Webhook event names and payload conventions.
 - Mock stablecoin payment and control-plane lifecycle.
-- One canonical end-to-end scenario: bank customer wallet -> deposit address -> outgoing payment -> policy/risk check -> approval -> settlement -> reconciliation -> audit trail.
+- One canonical end-to-end scenario: SandBank sandbox user -> wallet -> synthetic address -> outgoing payment -> simulation -> approval -> settlement -> reconciliation -> audit trail.
 
 ## Intentionally Out Of Scope
 
@@ -27,8 +27,12 @@ This repo does not contain production cryptography, signing orchestration, polic
 - `openapi/en3-wallet-api.yaml` - sandbox REST API contract.
 - `asyncapi/en3-webhooks.yaml` - webhook event contract.
 - `examples/` - mock request and event payloads.
+- `examples/sandbank/` - canonical SandBank sandbox fixtures.
 - `docs/api-design-principles.md` - public API design notes.
 - `docs/end-to-end-bank-wallet-scenario.md` - canonical public scenario.
+- `docs/sandbank-demo-api-flow.md` - API flow for the SandBank demo.
+- `docs/lifecycle-transaction-flow.md` - transaction lifecycle sequence.
+- `docs/public-private-boundary.md` - public/private boundary summary.
 - `docs/webhook-signatures.md` - sandbox webhook signature boundary.
 
 ## Related En3 Repositories

@@ -1,47 +1,51 @@
-# End-to-End Bank Stablecoin Wallet Scenario
+# SandBank Sandbox Wallet Scenario
 
-This is the canonical public scenario for En3 public artifacts. Downstream SDK, reference-bank, admin, web, and mobile examples should use this model and vocabulary instead of inventing their own.
+Status: public reference / sandbox artifact. This repository is intended to document and demonstrate the En3 integration surface. Production cryptography, signing orchestration, policy enforcement, risk logic, ledger infrastructure, treasury execution, and customer deployments are private by design.
+
+SandBank is fictional and synthetic. This scenario is a public reference flow for En3 sandbox API and webhook contracts.
 
 ## Flow
 
-1. A bank customer exists in mock core banking.
-2. The bank creates an En3 sandbox user and wallet.
-3. En3 issues a deposit address.
-4. A stablecoin deposit is detected and reflected in mock balance state.
-5. The customer submits an outgoing payment.
-6. The transaction is simulated.
-7. A sandbox policy/risk check requires approval.
-8. An operations admin approves the transaction.
-9. The transaction is broadcast and settled in sandbox state.
-10. A reconciliation report is updated.
-11. Audit events record the lifecycle.
-12. Webhooks notify the partner backend.
+1. SandBank creates an En3 sandbox organization.
+2. SandBank creates an En3 sandbox user and wallet.
+3. En3 issues a synthetic deposit address.
+4. SandBank creates a sandbox policy with approval and block thresholds.
+5. SandBank registers a webhook endpoint for canonical public events.
+6. The user submits an outgoing payment intent.
+7. The transaction is simulated.
+8. The sandbox policy/risk result requires approval.
+9. A sandbox operator approves the transaction.
+10. Mock signing, mock broadcast, settlement, reconciliation, and audit events are recorded as sandbox state.
+11. Webhooks notify the partner backend.
 
-## Canonical States
+## Canonical Transaction States
 
 - `submitted`
 - `simulated`
 - `requires_approval`
 - `approved`
+- `signing`
+- `signed`
 - `broadcast`
 - `settled`
 - `failed`
+- `cancelled`
 
 ## Canonical Events
 
+- `organization.created`
+- `user.created`
 - `wallet.created`
 - `address.created`
+- `policy.created`
 - `transaction.submitted`
 - `transaction.simulated`
 - `transaction.requires_approval`
 - `transaction.approved`
+- `transaction.signing`
+- `transaction.signed`
 - `transaction.broadcast`
 - `transaction.settled`
 - `transaction.failed`
-- `risk.review_required`
-- `reconciliation.report_updated`
-- `audit.event_recorded`
-
-## Boundary
-
-This scenario is a public sandbox/reference artifact. Production signing, production custody, production policy enforcement, risk logic, ledger infrastructure, treasury execution, customer deployments, and real infrastructure details are private by design.
+- `audit.event_created`
+- `reconciliation.updated`

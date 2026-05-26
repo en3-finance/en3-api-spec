@@ -1,5 +1,7 @@
 # Security Policy
 
+Status: public reference / sandbox artifact. This repository is intended to document and demonstrate the En3 integration surface. Production cryptography, signing orchestration, policy enforcement, risk logic, ledger infrastructure, treasury execution, and customer deployments are private by design.
+
 Do not report vulnerabilities through public issues. Do not disclose security-sensitive findings publicly.
 
 Production custody, signing infrastructure, policy enforcement, ledger infrastructure, treasury execution, and customer deployments are not contained in En3 public repositories.

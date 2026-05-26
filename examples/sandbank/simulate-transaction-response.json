@@ -1,0 +1,21 @@
+{
+  "id": "sim_sandbox_000001",
+  "transactionId": "txn_sandbox_000001",
+  "estimatedFee": "1.25",
+  "policyDecision": {
+    "id": "pdc_sandbox_000001",
+    "policyId": "pol_sandbox_000001",
+    "transactionId": "txn_sandbox_000001",
+    "outcome": "approval_required"
+  },
+  "riskReview": {
+    "id": "rrv_sandbox_000001",
+    "transactionId": "txn_sandbox_000001",
+    "decision": "review_required",
+    "signals": [
+      "sandbox_amount_threshold"
+    ],
+    "vendorIntegration": false
+  },
+  "transactionStatus": "requires_approval"
+}

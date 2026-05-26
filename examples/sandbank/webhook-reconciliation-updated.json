@@ -1,0 +1,12 @@
+{
+  "id": "evt_sandbox_000002",
+  "type": "reconciliation.updated",
+  "createdAt": "2026-05-25T12:00:05Z",
+  "organizationId": "org_sandbox_000001",
+  "deliveryStatus": "delivered",
+  "resourceType": "ReconciliationEntry",
+  "resourceId": "rec_sandbox_000001",
+  "transactionId": "txn_sandbox_000001",
+  "status": "matched",
+  "mockReferenceOnly": true
+}

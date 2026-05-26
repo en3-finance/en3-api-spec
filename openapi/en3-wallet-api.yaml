@@ -2,16 +2,40 @@ openapi: 3.1.0
 info:
   title: En3 Wallet-as-a-Service Sandbox API
   version: 0.1.0
-  description: Public sandbox contract for En3 Wallet-as-a-Service integration. This contract is not a production custody, signing, policy, ledger, risk, or treasury system.
+  license:
+    name: MIT
+    identifier: MIT
+  description: >-
+    Status: public reference / sandbox artifact. This repository is intended to
+    document and demonstrate the En3 integration surface. Production
+    cryptography, signing orchestration, policy enforcement, risk logic, ledger
+    infrastructure, treasury execution, and customer deployments are private by
+    design.
 servers:
   - url: https://sandbox.api.en3.example
-    description: Placeholder sandbox URL for documentation only.
+    description: Documentation placeholder for the synthetic sandbox.
 security:
   - bearerAuth: []
+tags:
+  - name: Organizations
+    description: Sandbox organization setup.
+  - name: Users
+    description: Synthetic user records.
+  - name: Wallets
+    description: Wallet containers and synthetic addresses.
+  - name: Transactions
+    description: Transaction intent, simulation, and approval workflow.
+  - name: Policies
+    description: Sandbox policy configuration.
+  - name: Webhooks
+    description: Webhook endpoint registration.
+  - name: Audit
+    description: Sandbox audit event lookup.
 paths:
   /organizations:
     post:
-      summary: Create an organization in the sandbox
+      tags: [Organizations]
+      summary: Create a sandbox organization
       operationId: createOrganization
       requestBody:
         required: true
@@ -19,15 +43,24 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateOrganizationRequest'
+            examples:
+              sandbank:
+                value:
+                  name: SandBank
       responses:
         '201':
-          description: Organization created
+          description: Organization created.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
   /users:
     post:
+      tags: [Users]
       summary: Create a sandbox user
       operationId: createUser
       requestBody:
@@ -38,13 +71,18 @@ paths:
               $ref: '#/components/schemas/CreateUserRequest'
       responses:
         '201':
-          description: User created
+          description: User created.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
   /wallets:
     post:
+      tags: [Wallets]
       summary: Create a wallet
       operationId: createWallet
       requestBody:
@@ -55,27 +93,37 @@ paths:
               $ref: '#/components/schemas/CreateWalletRequest'
       responses:
         '201':
-          description: Wallet created
+          description: Wallet created.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Wallet'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
   /wallets/{walletId}:
     get:
+      tags: [Wallets]
       summary: Get wallet details
       operationId: getWallet
       parameters:
         - $ref: '#/components/parameters/WalletId'
       responses:
         '200':
-          description: Wallet details
+          description: Wallet details.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Wallet'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
   /wallets/{walletId}/addresses:
     post:
-      summary: Create a deposit address
+      tags: [Wallets]
+      summary: Issue a synthetic deposit address
       operationId: createWalletAddress
       parameters:
         - $ref: '#/components/parameters/WalletId'
@@ -87,14 +135,19 @@ paths:
               $ref: '#/components/schemas/CreateAddressRequest'
       responses:
         '201':
-          description: Address created
+          description: Address created.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Address'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
   /transactions:
     post:
-      summary: Submit a sandbox transaction
+      tags: [Transactions]
+      summary: Submit a sandbox transaction intent
       operationId: submitTransaction
       requestBody:
         required: true
@@ -104,27 +157,37 @@ paths:
               $ref: '#/components/schemas/CreateTransactionRequest'
       responses:
         '202':
-          description: Transaction accepted for simulation or approval
+          description: Transaction submitted.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Transaction'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
   /transactions/{transactionId}/simulate:
     post:
-      summary: Simulate a transaction before execution
+      tags: [Transactions]
+      summary: Simulate a transaction before approval and mock signing
       operationId: simulateTransaction
       parameters:
         - $ref: '#/components/parameters/TransactionId'
       responses:
         '200':
-          description: Simulation result
+          description: Simulation result.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransactionSimulation'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
   /transactions/{transactionId}/approve:
     post:
-      summary: Approve a transaction in the sandbox approval workflow
+      tags: [Transactions]
+      summary: Approve a transaction in the sandbox workflow
       operationId: approveTransaction
       parameters:
         - $ref: '#/components/parameters/TransactionId'
@@ -136,23 +199,29 @@ paths:
               $ref: '#/components/schemas/ApproveTransactionRequest'
       responses:
         '200':
-          description: Approval recorded
+          description: Approval recorded.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Approval'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
   /audit-events:
     get:
-      summary: List audit events
+      tags: [Audit]
+      summary: List sandbox audit events
       operationId: listAuditEvents
       parameters:
         - name: organizationId
           in: query
           schema:
             type: string
+          example: org_sandbox_000001
       responses:
         '200':
-          description: Audit events
+          description: Audit events.
           content:
             application/json:
               schema:
@@ -163,8 +232,13 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/AuditEvent'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
   /policies:
     post:
+      tags: [Policies]
       summary: Create a sandbox policy
       operationId: createPolicy
       requestBody:
@@ -175,14 +249,19 @@ paths:
               $ref: '#/components/schemas/CreatePolicyRequest'
       responses:
         '201':
-          description: Policy created
+          description: Policy created.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Policy'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
   /webhook-endpoints:
     post:
-      summary: Register a webhook endpoint
+      tags: [Webhooks]
+      summary: Register a sandbox webhook endpoint
       operationId: createWebhookEndpoint
       requestBody:
         required: true
@@ -192,24 +271,15 @@ paths:
               $ref: '#/components/schemas/CreateWebhookEndpointRequest'
       responses:
         '201':
-          description: Webhook endpoint registered
+          description: Webhook endpoint registered.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/WebhookEndpoint'
-  /reconciliation-reports/{reportId}:
-    get:
-      summary: Get a sandbox reconciliation report
-      operationId: getReconciliationReport
-      parameters:
-        - $ref: '#/components/parameters/ReportId'
-      responses:
-        '200':
-          description: Reconciliation report
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ReconciliationReport'
+        '4XX':
+          $ref: '#/components/responses/Error'
+        default:
+          $ref: '#/components/responses/Error'
 components:
   securitySchemes:
     bearerAuth:
@@ -223,180 +293,267 @@ components:
       required: true
       schema:
         type: string
+        pattern: '^wal_sandbox_[0-9]{6}$'
+      example: wal_sandbox_000001
     TransactionId:
       name: transactionId
       in: path
       required: true
       schema:
         type: string
-    ReportId:
-      name: reportId
-      in: path
-      required: true
-      schema:
-        type: string
+        pattern: '^txn_sandbox_[0-9]{6}$'
+      example: txn_sandbox_000001
+  responses:
+    Error:
+      description: Sandbox error envelope.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
   schemas:
     Organization:
       type: object
-      required: [id, name, status, createdAt]
+      required: [id, name, mode, status, createdAt]
       properties:
         id:
           type: string
+          example: org_sandbox_000001
         name:
           type: string
+          example: SandBank
+        mode:
+          type: string
+          enum: [sandbox]
         status:
           type: string
           enum: [sandbox_active, suspended]
         createdAt:
           type: string
           format: date-time
+        reconciliation:
+          $ref: '#/components/schemas/ReconciliationEntry'
     User:
       type: object
       required: [id, organizationId, externalUserId, status, createdAt]
       properties:
         id:
           type: string
+          example: usr_sandbox_000001
         organizationId:
           type: string
+          example: org_sandbox_000001
         externalUserId:
           type: string
+          example: sandbank-user-000001
         status:
           type: string
           enum: [active, restricted, closed]
         createdAt:
           type: string
           format: date-time
+    WalletStatus:
+      type: string
+      enum: [created, address_issued, active, suspended, closed]
     Wallet:
       type: object
-      required: [id, organizationId, ownerType, ownerId, status, balances]
+      required: [id, organizationId, ownerType, ownerId, status, createdAt]
       properties:
         id:
           type: string
+          example: wal_sandbox_000001
         organizationId:
           type: string
+          example: org_sandbox_000001
         ownerType:
           type: string
           enum: [user, treasury, system]
         ownerId:
           type: string
+          example: usr_sandbox_000001
         status:
-          type: string
-          enum: [active, frozen, closed]
-        balances:
-          type: array
-          items:
-            type: object
-            required: [asset, network, available, pending]
-            properties:
-              asset:
-                type: string
-              network:
-                type: string
-              available:
-                type: string
-              pending:
-                type: string
-    Address:
-      type: object
-      required: [id, walletId, network, address, status]
-      properties:
-        id:
-          type: string
-        walletId:
-          type: string
-        network:
-          type: string
-        address:
-          type: string
-        status:
-          type: string
-          enum: [active, archived]
-    Transaction:
-      type: object
-      required: [id, organizationId, walletId, type, asset, amount, network, status, createdAt]
-      properties:
-        id:
-          type: string
-        organizationId:
-          type: string
-        walletId:
-          type: string
-        type:
-          type: string
-          enum: [deposit, withdrawal, transfer]
-        asset:
-          type: string
-        amount:
-          type: string
-        network:
-          type: string
-        destinationAddress:
-          type: string
-        status:
-          type: string
-          enum: [submitted, simulated, requires_approval, approved, broadcast, settled, failed]
-        policyResult:
-          type: string
-          enum: [pass, approval_required, review_required, blocked]
+          $ref: '#/components/schemas/WalletStatus'
         createdAt:
           type: string
           format: date-time
-    TransactionSimulation:
+    Address:
       type: object
-      required: [transactionId, result, estimatedFee, policyResult]
+      required: [id, walletId, organizationId, assetCode, networkCode, address, status, createdAt]
       properties:
+        id:
+          type: string
+          example: adr_sandbox_000001
+        walletId:
+          type: string
+          example: wal_sandbox_000001
+        organizationId:
+          type: string
+          example: org_sandbox_000001
+        assetCode:
+          type: string
+          example: USDC
+        networkCode:
+          type: string
+          example: sandbox-base-sepolia
+        address:
+          type: string
+          description: Synthetic address string for sandbox examples.
+          example: sandbox_addr_sandbank_000001
+        status:
+          type: string
+          enum: [active, archived]
+        createdAt:
+          type: string
+          format: date-time
+    TransactionStatus:
+      type: string
+      enum:
+        - submitted
+        - simulated
+        - requires_approval
+        - approved
+        - signing
+        - signed
+        - broadcast
+        - settled
+        - failed
+        - cancelled
+    Transaction:
+      type: object
+      required: [id, organizationId, walletId, type, assetCode, networkCode, amount, status, createdAt]
+      properties:
+        id:
+          type: string
+          example: txn_sandbox_000001
+        organizationId:
+          type: string
+          example: org_sandbox_000001
+        walletId:
+          type: string
+          example: wal_sandbox_000001
+        type:
+          type: string
+          enum: [withdrawal, transfer]
+        assetCode:
+          type: string
+          example: USDC
+        networkCode:
+          type: string
+          example: sandbox-base-sepolia
+        amount:
+          type: string
+          example: '12500.00'
+        destinationAddress:
+          type: string
+          example: sandbox_destination_sandbank_000001
+        status:
+          $ref: '#/components/schemas/TransactionStatus'
+        createdAt:
+          type: string
+          format: date-time
+    RiskDecision:
+      type: string
+      enum: [allow, review_required, block]
+    PolicyDecision:
+      type: object
+      required: [id, policyId, transactionId, outcome]
+      properties:
+        id:
+          type: string
+          example: pdc_sandbox_000001
+        policyId:
+          type: string
+          example: pol_sandbox_000001
         transactionId:
           type: string
-        result:
+          example: txn_sandbox_000001
+        outcome:
           type: string
           enum: [allowed, approval_required, review_required, blocked]
-        estimatedFee:
+    RiskReview:
+      type: object
+      required: [id, transactionId, decision, signals, vendorIntegration]
+      properties:
+        id:
           type: string
-        policyResult:
+          example: rrv_sandbox_000001
+        transactionId:
           type: string
-        riskSignals:
+          example: txn_sandbox_000001
+        decision:
+          $ref: '#/components/schemas/RiskDecision'
+        signals:
           type: array
           items:
             type: string
-    Policy:
+          example: [sandbox_amount_threshold]
+        vendorIntegration:
+          type: boolean
+          const: false
+    TransactionSimulation:
       type: object
-      required: [id, organizationId, name, status, rules]
+      required: [id, transactionId, estimatedFee, policyDecision, riskReview, transactionStatus]
       properties:
         id:
           type: string
+          example: sim_sandbox_000001
+        transactionId:
+          type: string
+          example: txn_sandbox_000001
+        estimatedFee:
+          type: string
+          example: '1.25'
+        policyDecision:
+          $ref: '#/components/schemas/PolicyDecision'
+        riskReview:
+          $ref: '#/components/schemas/RiskReview'
+        transactionStatus:
+          $ref: '#/components/schemas/TransactionStatus'
+    Policy:
+      type: object
+      required: [id, organizationId, name, status, approvalThreshold, blockThreshold, createdAt]
+      properties:
+        id:
+          type: string
+          example: pol_sandbox_000001
         organizationId:
           type: string
+          example: org_sandbox_000001
         name:
           type: string
+          example: SandBank approval threshold
         status:
           type: string
           enum: [draft, active, disabled]
-        rules:
-          type: array
-          items:
-            type: object
-            required: [type, action]
-            properties:
-              type:
-                type: string
-              threshold:
-                type: string
-              action:
-                type: string
-                enum: [allow, require_approval, require_review, block]
+        approvalThreshold:
+          type: string
+          example: '10000.00'
+        blockThreshold:
+          type: string
+          example: '50000.00'
+        createdAt:
+          type: string
+          format: date-time
+    ApprovalStatus:
+      type: string
+      enum: [not_required, pending, approved, rejected, expired]
     Approval:
       type: object
-      required: [id, transactionId, status, decidedBy, decidedAt]
+      required: [id, organizationId, transactionId, status, decidedBy, decidedAt]
       properties:
         id:
           type: string
+          example: apv_sandbox_000001
+        organizationId:
+          type: string
+          example: org_sandbox_000001
         transactionId:
           type: string
+          example: txn_sandbox_000001
         status:
-          type: string
-          enum: [approved, rejected]
+          $ref: '#/components/schemas/ApprovalStatus'
         decidedBy:
           type: string
+          example: usr_sandbox_operator_000001
         note:
           type: string
         decidedAt:
@@ -404,74 +561,95 @@ components:
           format: date-time
     AuditEvent:
       type: object
-      required: [id, organizationId, actorType, action, resourceType, resourceId, createdAt]
+      required: [id, organizationId, action, resourceType, resourceId, createdAt]
       properties:
         id:
           type: string
+          example: aud_sandbox_000001
         organizationId:
           type: string
-        actorType:
-          type: string
-          enum: [user, admin, system]
-        actorId:
-          type: string
+          example: org_sandbox_000001
         action:
           type: string
+          example: transaction.approved
         resourceType:
           type: string
+          example: TransactionIntent
         resourceId:
           type: string
+          example: txn_sandbox_000001
         createdAt:
           type: string
           format: date-time
+    PublicEventType:
+      type: string
+      enum:
+        - organization.created
+        - user.created
+        - wallet.created
+        - address.created
+        - policy.created
+        - transaction.submitted
+        - transaction.simulated
+        - transaction.requires_approval
+        - transaction.approved
+        - transaction.signing
+        - transaction.signed
+        - transaction.broadcast
+        - transaction.settled
+        - transaction.failed
+        - audit.event_created
+        - reconciliation.updated
+    WebhookDeliveryStatus:
+      type: string
+      enum: [pending, delivered, failed, retrying]
     WebhookEndpoint:
       type: object
-      required: [id, organizationId, url, events, status]
+      required: [id, organizationId, url, events, status, createdAt]
       properties:
         id:
           type: string
+          example: wep_sandbox_000001
         organizationId:
           type: string
+          example: org_sandbox_000001
         url:
           type: string
           format: uri
+          example: https://webhooks.sandbank.example/en3
         events:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/PublicEventType'
         status:
           type: string
           enum: [active, disabled]
-    ReconciliationReport:
+        lastDeliveryStatus:
+          $ref: '#/components/schemas/WebhookDeliveryStatus'
+        createdAt:
+          type: string
+          format: date-time
+    ReconciliationStatus:
+      type: string
+      enum: [pending, matched, exception, resolved]
+    ReconciliationEntry:
       type: object
-      required: [id, organizationId, status, itemCount, items, updatedAt]
+      required: [id, organizationId, transactionId, status, mockReferenceOnly, updatedAt]
       properties:
         id:
           type: string
+          example: rec_sandbox_000001
         organizationId:
           type: string
-        status:
+          example: org_sandbox_000001
+        transactionId:
           type: string
-          enum: [matched, exception]
-        itemCount:
-          type: integer
-        items:
-          type: array
-          items:
-            type: object
-            required: [transactionId, walletId, asset, amount, status]
-            properties:
-              transactionId:
-                type: string
-              walletId:
-                type: string
-              asset:
-                type: string
-              amount:
-                type: string
-              status:
-                type: string
-                enum: [matched, exception]
+          example: txn_sandbox_000001
+        status:
+          $ref: '#/components/schemas/ReconciliationStatus'
+        mockReferenceOnly:
+          type: boolean
+          const: true
         updatedAt:
           type: string
           format: date-time
@@ -481,84 +659,141 @@ components:
       properties:
         name:
           type: string
+          example: SandBank
     CreateUserRequest:
       type: object
       required: [organizationId, externalUserId]
       properties:
         organizationId:
           type: string
+          example: org_sandbox_000001
         externalUserId:
           type: string
+          example: sandbank-user-000001
     CreateWalletRequest:
       type: object
       required: [organizationId, ownerType, ownerId]
       properties:
         organizationId:
           type: string
+          example: org_sandbox_000001
         ownerType:
           type: string
           enum: [user, treasury, system]
         ownerId:
           type: string
+          example: usr_sandbox_000001
     CreateAddressRequest:
       type: object
-      required: [network, asset]
-      properties:
-        network:
-          type: string
-        asset:
-          type: string
-    CreateTransactionRequest:
-      type: object
-      required: [organizationId, walletId, asset, amount, network, destinationAddress]
+      required: [organizationId, assetCode, networkCode]
       properties:
         organizationId:
           type: string
+          example: org_sandbox_000001
+        assetCode:
+          type: string
+          example: USDC
+        networkCode:
+          type: string
+          example: sandbox-base-sepolia
+    CreateTransactionRequest:
+      type: object
+      required: [organizationId, walletId, type, assetCode, networkCode, amount, destinationAddress]
+      properties:
+        organizationId:
+          type: string
+          example: org_sandbox_000001
         walletId:
           type: string
-        asset:
+          example: wal_sandbox_000001
+        type:
           type: string
+          enum: [withdrawal, transfer]
+        assetCode:
+          type: string
+          example: USDC
+        networkCode:
+          type: string
+          example: sandbox-base-sepolia
         amount:
           type: string
-        network:
-          type: string
+          example: '12500.00'
         destinationAddress:
           type: string
+          example: sandbox_destination_sandbank_000001
         idempotencyKey:
           type: string
+          example: sandbank-txn-000001
     ApproveTransactionRequest:
       type: object
       required: [decidedBy, decision]
       properties:
         decidedBy:
           type: string
+          example: usr_sandbox_operator_000001
         decision:
           type: string
           enum: [approve, reject]
         note:
           type: string
+          example: Sandbox approval for SandBank demo flow.
     CreatePolicyRequest:
       type: object
-      required: [organizationId, name, rules]
+      required: [organizationId, name, approvalThreshold, blockThreshold]
       properties:
         organizationId:
           type: string
+          example: org_sandbox_000001
         name:
           type: string
-        rules:
-          type: array
-          items:
-            type: object
+          example: SandBank approval threshold
+        approvalThreshold:
+          type: string
+          example: '10000.00'
+        blockThreshold:
+          type: string
+          example: '50000.00'
     CreateWebhookEndpointRequest:
       type: object
       required: [organizationId, url, events]
       properties:
         organizationId:
           type: string
+          example: org_sandbox_000001
         url:
           type: string
           format: uri
+          example: https://webhooks.sandbank.example/en3
         events:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/PublicEventType'
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, mode]
+          properties:
+            code:
+              type: string
+              enum:
+                - VALIDATION_ERROR
+                - ORGANIZATION_NOT_FOUND
+                - ORGANIZATION_INACTIVE
+                - USER_NOT_FOUND
+                - WALLET_NOT_FOUND
+                - WALLET_INACTIVE
+                - WALLET_ORGANIZATION_MISMATCH
+                - TRANSACTION_NOT_FOUND
+                - INVALID_TRANSACTION_TRANSITION
+                - APPROVAL_NOT_REQUIRED
+                - APPROVAL_NOT_PENDING
+                - SIGNER_BOUNDARY_ERROR
+                - INTERNAL_SANDBOX_ERROR
+            message:
+              type: string
+            mode:
+              type: string
+              enum: [sandbox]

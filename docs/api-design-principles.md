@@ -1,5 +1,7 @@
 # API Design Principles
 
+Status: public reference / sandbox artifact. This repository is intended to document and demonstrate the En3 integration surface. Production cryptography, signing orchestration, policy enforcement, risk logic, ledger infrastructure, treasury execution, and customer deployments are private by design.
+
 The public En3 API contract is a sandbox artifact. It describes integration shape without publishing production internals.
 
 ## Principles
@@ -17,5 +19,4 @@ The public En3 API contract is a sandbox artifact. It describes integration shap
 - No production ledger implementation.
 - No risk scoring rules.
 - No treasury execution.
-- No customer deployment configuration.
-
+- No deployment configuration.
